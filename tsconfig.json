@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "module": "amd",
+        "target": "es5",
+        "jsx": "preserve",
+        "lib": ["dom", "es5"],
+        "watch": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceRoot": "./src/ts",
+        "rootDir": "./src/ts",
+        "outFile": "./app.js",
+        "sourceMap": true
+    },
+    "exclude": [
+        "node_modules",
+        "**/node_modules/*"
+    ]
+}
