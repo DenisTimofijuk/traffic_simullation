@@ -3,30 +3,28 @@
 
 function initMain() {
     const canvas = <HTMLCanvasElement>document.getElementById('mainCanv');
-    const driveBTN = <HTMLButtonElement>document.getElementById('drive');
+    // const driveBTN = <HTMLButtonElement>document.getElementById('drive');
+    const carsCount = 5;
+    const carsArray: Array<Car.init> = [];
 
-    var car = new Car.init(canvas, { color: "blue", size: 10, x: 15, y: 25 });
+    var size = 10;
+    var x = 15;
+    var y = 50;
+    for (let index = 0; index < carsCount; index++) {
+        y = y + size + 15;
+        carsArray.push(new Car.init(canvas, { color: "blue", size: size, x: x, y: y }))
+    }
     var roads = new Roads.init(canvas);
 
-    driveBTN.addEventListener('click', function(event){
-        car.drive();
-    })
-    // var drawRoads = new Roads.init(canvas, function(){
-    //     car.draw();
-    //     car.checkRoad();
-    // });
-
-    
     roads.draw();
-    car.draw();
 
     window.requestAnimationFrame(initSimulation)
 
-    function initSimulation():void{
-        car.drive();
-        canvas.getContext('2d').clearRect(0,0,canvas.width, canvas.height);
+    function initSimulation(): void {
+        carsArray.forEach((element) => element.drive())
+        canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
         roads.draw();
-        car.draw();
+        carsArray.forEach((element) => element.draw())
 
         window.requestAnimationFrame(initSimulation)
     }

@@ -36,46 +36,47 @@ module Car {
       this.context.arc(this.x, this.y, this.r, 0, 2 * Math.PI);
       this.context.fillStyle = this.color;
       this.context.fill();
+      this.context.font = "10px Arial";
+      this.context.textBaseline = 'middle';
+      this.context.textAlign = 'center';
+      this.context.save();
+      this.context.translate(this.x, this.y);
+      var deg = this.dir === 'd' ? 90 : this.dir === 'u' ? 270 : this.dir === 'l' ? 180 : 0
+      this.context.rotate(deg * Math.PI / 180);
+      this.context.strokeStyle = 'white';
+      this.context.strokeText('>',0, 0);
+      this.context.restore();
       this.context.closePath();
     }
 
     drive(): void {
-      var dirToGo = this.getDirection();
-    
-      if(dirToGo === 'u'){
+      this.setDirection();
+
+      if(this.dir === 'u'){
         this.y--;
-      }else if(dirToGo === 'd'){
+      }else if(this.dir === 'd'){
         this.y++;
-      }else if(dirToGo === 'r'){
+      }else if(this.dir === 'r'){
         this.x++;
       }else{
         this.x--;
       }   
-      this.dir = dirToGo;
     }
 
-    getDirection(): Direction {
+    setDirection(): void {
       function _getOppositeDir(dir: Direction): Direction {
         return dir === 'u' ? 'd' : dir === 'd' ? 'u' : dir === 'l' ? 'r' : 'l';
       }
       var availableDirections = this.getAvailableDirections();
-      
-      //console.log('availableDirections', availableDirections)
-
       var indexOfOpositeDir = availableDirections.indexOf(_getOppositeDir(this.dir));
+
       if (indexOfOpositeDir >= 0) {
         availableDirections.splice(indexOfOpositeDir, 1);
       }
 
       if(availableDirections.length > 0){
-        var dirToGo = availableDirections[Math.floor(Math.random() * availableDirections.length)];
-      }else{
-        var dirToGo = this.dir;
+        this.dir = availableDirections[Math.floor(Math.random() * availableDirections.length)];
       }
-      
-      //console.log('dirToGo', dirToGo)
-
-      return dirToGo
     }
 
     invert(): void {
@@ -115,12 +116,12 @@ module Car {
 
         // data.data.forEach(function (value, index) {
         //   if (index % nth === nth - 1) {
-        //     if (!_hasPixelColor(data.data, index)) {
+        //     if (!_isPixelRoadColor(data.data, index)) {
         //       flag = true;
         //     }
         //   }
         // })
-        if (_hasPixelColor(data.data, 0)) {
+        if (_isPixelRoadColor(data.data, 0)) {
           flag = true;
         }
 
@@ -138,6 +139,15 @@ module Car {
         var a = colors[index + 3];
 
         return r > 0 || g > 0 || b > 0;
+      }
+
+      function _isPixelRoadColor(colors: Uint8ClampedArray, index: number): boolean {
+        var r = colors[index + 0];
+        var g = colors[index + 1];
+        var b = colors[index + 2];
+        var a = colors[index + 3];
+
+        return r > 250 && g == 0 && b == 0;
       }
 
       _isAvailableRoad('u') ? availableDirections.push('u') : '';
