@@ -1,4 +1,4 @@
-interface params {
+interface CarParams {
   color: string,
   size: number,
   x: number,
@@ -19,7 +19,7 @@ module Car {
     private readonly r: number;
     private dir: Direction;
 
-    constructor(host: HTMLCanvasElement, p: params) {
+    constructor(host: HTMLCanvasElement, p: CarParams) {
       this.context = host.getContext('2d');
       this.color = p.color;
       this.size = p.size;

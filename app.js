@@ -113,6 +113,20 @@ var Car;
     }());
     Car.init = init;
 })(Car || (Car = {}));
+var d1;
+(function (d1) {
+    var init = (function () {
+        function init() {
+        }
+        init.prototype.getRandomIntInclusive = function (min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        };
+        return init;
+    }());
+    d1.init = init;
+})(d1 || (d1 = {}));
 var Roads;
 (function (Roads) {
     var init = (function () {
@@ -155,16 +169,23 @@ function initMain() {
     var canvas = document.getElementById('mainCanv');
     var carsCount = 5;
     var carsArray = [];
+    var d = new d1.init();
     var size = 10;
     var x = 15;
     var y = 50;
     for (var index = 0; index < carsCount; index++) {
         y = y + size + 15;
-        carsArray.push(new Car.init(canvas, { color: "blue", size: size, x: x, y: y }));
+        carsArray.push(new Car.init(canvas, { color: getColor(), size: size, x: x, y: y }));
     }
     var roads = new Roads.init(canvas);
     roads.draw();
     window.requestAnimationFrame(initSimulation);
+    function getColor() {
+        var r = d.getRandomIntInclusive(0, 255);
+        var g = d.getRandomIntInclusive(0, 255);
+        var b = d.getRandomIntInclusive(50, 255);
+        return 'rgb(' + r + ',' + g + ',' + b + ')';
+    }
     function initSimulation() {
         carsArray.forEach(function (element) { return element.drive(); });
         canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
