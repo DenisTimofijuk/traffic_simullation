@@ -3,7 +3,7 @@
 
 function initMain() {
     const canvas = <HTMLCanvasElement>document.getElementById('mainCanv');
-    // const driveBTN = <HTMLButtonElement>document.getElementById('drive');
+    const driveBTN = <HTMLButtonElement>document.getElementById('drive');
     const carsCount = 5;
     const carsArray: Array<Car.init> = [];
     const d = new d1.init();
@@ -18,8 +18,10 @@ function initMain() {
     var roads = new Roads.init(canvas);
 
     roads.draw();
-
-    window.requestAnimationFrame(initSimulation)
+    carsArray.forEach((element) => element.drive())
+    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+    roads.draw();
+    carsArray.forEach((element) => element.draw())
 
     function getColor(): string {
         var r = d.getRandomIntInclusive(0, 255);
@@ -36,6 +38,8 @@ function initMain() {
 
         window.requestAnimationFrame(initSimulation)
     }
+
+    driveBTN.addEventListener('click', initSimulation, false);
 }
 
 document.addEventListener('DOMContentLoaded', initMain, false);

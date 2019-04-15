@@ -167,6 +167,7 @@ var Roads;
 })(Roads || (Roads = {}));
 function initMain() {
     var canvas = document.getElementById('mainCanv');
+    var driveBTN = document.getElementById('drive');
     var carsCount = 5;
     var carsArray = [];
     var d = new d1.init();
@@ -179,7 +180,10 @@ function initMain() {
     }
     var roads = new Roads.init(canvas);
     roads.draw();
-    window.requestAnimationFrame(initSimulation);
+    carsArray.forEach(function (element) { return element.drive(); });
+    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+    roads.draw();
+    carsArray.forEach(function (element) { return element.draw(); });
     function getColor() {
         var r = d.getRandomIntInclusive(0, 255);
         var g = d.getRandomIntInclusive(0, 255);
@@ -193,6 +197,7 @@ function initMain() {
         carsArray.forEach(function (element) { return element.draw(); });
         window.requestAnimationFrame(initSimulation);
     }
+    driveBTN.addEventListener('click', initSimulation, false);
 }
 document.addEventListener('DOMContentLoaded', initMain, false);
 //# sourceMappingURL=app.js.map
