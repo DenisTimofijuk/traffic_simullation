@@ -40,47 +40,98 @@ module Car {
     }
 
     drive(): void {
-      this.invert();
-      //move per 1 pixel
-      //check road
-      //if crosroad randomly choose direction
-      //change coordinates accordingly
-      //call draw()
+      var dirToGo = this.getDirection();
+    
+      if(dirToGo === 'u'){
+        this.y--;
+      }else if(dirToGo === 'd'){
+        this.y++;
+      }else if(dirToGo === 'r'){
+        this.x++;
+      }else{
+        this.x--;
+      }   
+      this.dir = dirToGo;
+    }
 
+    getDirection(): Direction {
+      function _getOppositeDir(dir: Direction): Direction {
+        return dir === 'u' ? 'd' : dir === 'd' ? 'u' : dir === 'l' ? 'r' : 'l';
+      }
+      var availableDirections = this.getAvailableDirections();
+      
+      //console.log('availableDirections', availableDirections)
+
+      var indexOfOpositeDir = availableDirections.indexOf(_getOppositeDir(this.dir));
+      if (indexOfOpositeDir >= 0) {
+        availableDirections.splice(indexOfOpositeDir, 1);
+      }
+
+      if(availableDirections.length > 0){
+        var dirToGo = availableDirections[Math.floor(Math.random() * availableDirections.length)];
+      }else{
+        var dirToGo = this.dir;
+      }
+      
+      //console.log('dirToGo', dirToGo)
+
+      return dirToGo
     }
 
     invert(): void {
-      var x = this.dir === 'u' ? this.x - this.r : this.dir === 'd' ? this.x - this.r : this.dir === 'r' ? this.x + this.r : this.x - this.r * 3;
-      var y = this.dir === 'u' ? this.y - this.r * 3 : this.dir === 'd' ? this.y + this.r : this.dir === 'r' ? this.y - this.r : this.y - this.r;
+      var x = this.getXtoCheck(this.dir);
+      var y = this.getYtoCheck(this.dir);
       var data = this.context.getImageData(x, y, this.r * 2, this.r * 2);
 
       for (var i = 0; i < data.data.length; i += 4) {
-        data.data[i] = 255 - data.data[i];     // red
-        data.data[i + 1] = 255 - data.data[i + 1]; // green
-        data.data[i + 2] = 255 - data.data[i + 2]; // blue
+        data.data[i] = 255 - data.data[i];
+        data.data[i + 1] = 255 - data.data[i + 1];
+        data.data[i + 2] = 255 - data.data[i + 2];
       }
       this.context.putImageData(data, x, y);
     }
 
-    checkRoad() {
-      var x = this.dir === 'u' ? this.x - this.r : this.dir === 'd' ? this.x - this.r : this.dir === 'r' ? this.x + this.r : this.x - this.r * 3;
-      var y = this.dir === 'u' ? this.y - this.r * 3 : this.dir === 'd' ? this.y + this.r : this.dir === 'r' ? this.y - this.r : this.y - this.r;
+    getXtoCheck(dir: Direction): number {
+      return dir === 'u' ? this.x : dir === 'd' ? this.x : dir === 'r' ? this.x + this.r : this.x - this.r - 1;
+    }
 
-      var data = this.context.getImageData(x, y, this.r * 2, this.r * 2);
-      var nth = 4;
+    getYtoCheck(dir: Direction): number {
+      return dir === 'u' ? this.y - this.r - 1 : dir === 'd' ? this.y + this.r : dir === 'r' ? this.y : this.y;
+    }
 
-      data.data.forEach(function (value, index) {
+    getAvailableDirections(): Array<Direction> {
+      //TODO: get square size of moving speed
+      var _this = this;
+      var availableDirections: Array<Direction> = [];
 
-        if (index % nth === nth - 1) {
-          var row: number = Math.ceil((index + 1) / (data.width * 4));
-          console.log(row)
-          //tikslas rasti sankryza arba posuki, jie toks darinys neaptiktas, palikti krypti kokia buvo
+      function _isAvailableRoad(dir: Direction): boolean {
+        var x = _this.getXtoCheck(dir);
+        var y = _this.getYtoCheck(dir);
+        var w = 1;
+        var h = 1;
+        var nth = 4;
+        var data = _this.context.getImageData(x, y, w, h);
+        var flag = false;
 
+        // data.data.forEach(function (value, index) {
+        //   if (index % nth === nth - 1) {
+        //     if (!_hasPixelColor(data.data, index)) {
+        //       flag = true;
+        //     }
+        //   }
+        // })
+        if (_hasPixelColor(data.data, 0)) {
+          flag = true;
         }
 
-      })
+        // console.log('dir', dir)
+        // console.log(x, y);
+        // console.log(data);
 
-      function _isPixelWhite(colors: Array<number>, index: number): boolean {
+        return flag;
+      }
+
+      function _hasPixelColor(colors: Uint8ClampedArray, index: number): boolean {
         var r = colors[index + 0];
         var g = colors[index + 1];
         var b = colors[index + 2];
@@ -88,6 +139,13 @@ module Car {
 
         return r > 0 || g > 0 || b > 0;
       }
+
+      _isAvailableRoad('u') ? availableDirections.push('u') : '';
+      _isAvailableRoad('d') ? availableDirections.push('d') : '';
+      _isAvailableRoad('r') ? availableDirections.push('r') : '';
+      _isAvailableRoad('l') ? availableDirections.push('l') : '';
+
+      return availableDirections;
     }
   }
 }

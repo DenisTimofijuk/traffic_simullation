@@ -21,6 +21,30 @@ module Roads {
         this.context.lineWidth = 1.10;
         this.context.strokeStyle = 'rgba(255,0,0,255)';
         this.context.stroke(rectangle);
+
+        var rectangle = new Path2D();
+        rectangle.rect(15, 15, this.context.canvas.width/2, this.context.canvas.height/2);
+        this.context.lineWidth = 1.10;
+        this.context.strokeStyle = 'rgba(255,0,0,255)';
+        this.context.stroke(rectangle);
+
+        var rectangle = new Path2D();
+        rectangle.rect(15, 15, this.context.canvas.width/4, this.context.canvas.height-(15*2));
+        this.context.lineWidth = 1.10;
+        this.context.strokeStyle = 'rgba(255,0,0,255)';
+        this.context.stroke(rectangle);
+
+        var rectangle = new Path2D();
+        rectangle.rect(15, this.context.canvas.height - this.context.canvas.height / 4 - 15, this.context.canvas.width -(15*2), this.context.canvas.height / 4);
+        this.context.lineWidth = 1.10;
+        this.context.strokeStyle = 'rgba(255,0,0,255)';
+        this.context.stroke(rectangle);
+
+        var rectangle = new Path2D();
+        rectangle.rect(15, 15, this.context.canvas.width - this.context.canvas.width/4, this.context.canvas.height-(15*2));
+        this.context.lineWidth = 1.10;
+        this.context.strokeStyle = 'rgba(255,0,0,255)';
+        this.context.stroke(rectangle);
       }
     }
   }

@@ -19,11 +19,41 @@ var Car;
             this.context.closePath();
         };
         init.prototype.drive = function () {
-            this.invert();
+            var dirToGo = this.getDirection();
+            if (dirToGo === 'u') {
+                this.y--;
+            }
+            else if (dirToGo === 'd') {
+                this.y++;
+            }
+            else if (dirToGo === 'r') {
+                this.x++;
+            }
+            else {
+                this.x--;
+            }
+            this.dir = dirToGo;
+        };
+        init.prototype.getDirection = function () {
+            function _getOppositeDir(dir) {
+                return dir === 'u' ? 'd' : dir === 'd' ? 'u' : dir === 'l' ? 'r' : 'l';
+            }
+            var availableDirections = this.getAvailableDirections();
+            var indexOfOpositeDir = availableDirections.indexOf(_getOppositeDir(this.dir));
+            if (indexOfOpositeDir >= 0) {
+                availableDirections.splice(indexOfOpositeDir, 1);
+            }
+            if (availableDirections.length > 0) {
+                var dirToGo = availableDirections[Math.floor(Math.random() * availableDirections.length)];
+            }
+            else {
+                var dirToGo = this.dir;
+            }
+            return dirToGo;
         };
         init.prototype.invert = function () {
-            var x = this.dir === 'u' ? this.x - this.r : this.dir === 'd' ? this.x - this.r : this.dir === 'r' ? this.x + this.r : this.x - this.r * 3;
-            var y = this.dir === 'u' ? this.y - this.r * 3 : this.dir === 'd' ? this.y + this.r : this.dir === 'r' ? this.y - this.r : this.y - this.r;
+            var x = this.getXtoCheck(this.dir);
+            var y = this.getYtoCheck(this.dir);
             var data = this.context.getImageData(x, y, this.r * 2, this.r * 2);
             for (var i = 0; i < data.data.length; i += 4) {
                 data.data[i] = 255 - data.data[i];
@@ -32,24 +62,40 @@ var Car;
             }
             this.context.putImageData(data, x, y);
         };
-        init.prototype.checkRoad = function () {
-            var x = this.dir === 'u' ? this.x - this.r : this.dir === 'd' ? this.x - this.r : this.dir === 'r' ? this.x + this.r : this.x - this.r * 3;
-            var y = this.dir === 'u' ? this.y - this.r * 3 : this.dir === 'd' ? this.y + this.r : this.dir === 'r' ? this.y - this.r : this.y - this.r;
-            var data = this.context.getImageData(x, y, this.r * 2, this.r * 2);
-            var nth = 4;
-            data.data.forEach(function (value, index) {
-                if (index % nth === nth - 1) {
-                    var row = Math.ceil((index + 1) / (data.width * 4));
-                    console.log(row);
+        init.prototype.getXtoCheck = function (dir) {
+            return dir === 'u' ? this.x : dir === 'd' ? this.x : dir === 'r' ? this.x + this.r : this.x - this.r - 1;
+        };
+        init.prototype.getYtoCheck = function (dir) {
+            return dir === 'u' ? this.y - this.r - 1 : dir === 'd' ? this.y + this.r : dir === 'r' ? this.y : this.y;
+        };
+        init.prototype.getAvailableDirections = function () {
+            var _this = this;
+            var availableDirections = [];
+            function _isAvailableRoad(dir) {
+                var x = _this.getXtoCheck(dir);
+                var y = _this.getYtoCheck(dir);
+                var w = 1;
+                var h = 1;
+                var nth = 4;
+                var data = _this.context.getImageData(x, y, w, h);
+                var flag = false;
+                if (_hasPixelColor(data.data, 0)) {
+                    flag = true;
                 }
-            });
-            function _isPixelWhite(colors, index) {
+                return flag;
+            }
+            function _hasPixelColor(colors, index) {
                 var r = colors[index + 0];
                 var g = colors[index + 1];
                 var b = colors[index + 2];
                 var a = colors[index + 3];
                 return r > 0 || g > 0 || b > 0;
             }
+            _isAvailableRoad('u') ? availableDirections.push('u') : '';
+            _isAvailableRoad('d') ? availableDirections.push('d') : '';
+            _isAvailableRoad('r') ? availableDirections.push('r') : '';
+            _isAvailableRoad('l') ? availableDirections.push('l') : '';
+            return availableDirections;
         };
         return init;
     }());
@@ -68,6 +114,26 @@ var Roads;
             this.context.lineWidth = 1.10;
             this.context.strokeStyle = 'rgba(255,0,0,255)';
             this.context.stroke(rectangle);
+            var rectangle = new Path2D();
+            rectangle.rect(15, 15, this.context.canvas.width / 2, this.context.canvas.height / 2);
+            this.context.lineWidth = 1.10;
+            this.context.strokeStyle = 'rgba(255,0,0,255)';
+            this.context.stroke(rectangle);
+            var rectangle = new Path2D();
+            rectangle.rect(15, 15, this.context.canvas.width / 4, this.context.canvas.height - (15 * 2));
+            this.context.lineWidth = 1.10;
+            this.context.strokeStyle = 'rgba(255,0,0,255)';
+            this.context.stroke(rectangle);
+            var rectangle = new Path2D();
+            rectangle.rect(15, this.context.canvas.height - this.context.canvas.height / 4 - 15, this.context.canvas.width - (15 * 2), this.context.canvas.height / 4);
+            this.context.lineWidth = 1.10;
+            this.context.strokeStyle = 'rgba(255,0,0,255)';
+            this.context.stroke(rectangle);
+            var rectangle = new Path2D();
+            rectangle.rect(15, 15, this.context.canvas.width - this.context.canvas.width / 4, this.context.canvas.height - (15 * 2));
+            this.context.lineWidth = 1.10;
+            this.context.strokeStyle = 'rgba(255,0,0,255)';
+            this.context.stroke(rectangle);
         };
         return init;
     }());
@@ -76,13 +142,21 @@ var Roads;
 function initMain() {
     var canvas = document.getElementById('mainCanv');
     var driveBTN = document.getElementById('drive');
-    var car = new Car.init(canvas, { color: "brown", size: 10, x: 15, y: 100 });
-    var drawRoads = new Roads.init(canvas);
+    var car = new Car.init(canvas, { color: "blue", size: 10, x: 15, y: 25 });
+    var roads = new Roads.init(canvas);
     driveBTN.addEventListener('click', function (event) {
         car.drive();
     });
-    drawRoads.draw();
+    roads.draw();
     car.draw();
+    window.requestAnimationFrame(initSimulation);
+    function initSimulation() {
+        car.drive();
+        canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+        roads.draw();
+        car.draw();
+        window.requestAnimationFrame(initSimulation);
+    }
 }
 document.addEventListener('DOMContentLoaded', initMain, false);
 //# sourceMappingURL=app.js.map
