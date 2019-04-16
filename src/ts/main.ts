@@ -4,6 +4,7 @@
 function initMain() {
     const canvas = <HTMLCanvasElement>document.getElementById('mainCanv');
     const driveBTN = <HTMLButtonElement>document.getElementById('drive');
+    const fsBTN = <HTMLButtonElement>document.getElementById('fs');
     const carsCount = 5;
     const carsArray: Array<Car.init> = [];
     const d = new d1.init();
@@ -18,9 +19,6 @@ function initMain() {
     var roads = new Roads.init(canvas);
 
     roads.draw();
-    carsArray.forEach((element) => element.drive())
-    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-    roads.draw();
     carsArray.forEach((element) => element.draw())
 
     function getColor(): string {
@@ -31,15 +29,18 @@ function initMain() {
     }
 
     function initSimulation(): void {
-        carsArray.forEach((element) => element.drive())
         canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
         roads.draw();
+        carsArray.forEach((element) => element.drive())
         carsArray.forEach((element) => element.draw())
 
         window.requestAnimationFrame(initSimulation)
     }
 
     driveBTN.addEventListener('click', initSimulation, false);
+    fsBTN.addEventListener('click', function(){
+        document.getElementById('mainCanv').requestFullscreen();
+    });
 }
 
 document.addEventListener('DOMContentLoaded', initMain, false);

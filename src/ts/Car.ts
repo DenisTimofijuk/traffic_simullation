@@ -6,7 +6,7 @@ interface CarParams {
   [key: string]: any
 }
 
-type Direction = 'u' | 'd' | 'l' | 'r';
+type Direction = '0'|'1' | '2' | '3' | '4' | '5' | '6' | '7' | '8';
 
 module Car {
   export class init {
@@ -27,7 +27,7 @@ module Car {
       this.x = p.x
       this.y = p.y;
       this.r = 10;
-      this.dir = 'u';
+      this.dir = '2';
     }
 
 
@@ -39,33 +39,84 @@ module Car {
       this.context.font = "10px Arial";
       this.context.textBaseline = 'middle';
       this.context.textAlign = 'center';
-      this.context.save();
-      this.context.translate(this.x, this.y);
-      var deg = this.dir === 'd' ? 90 : this.dir === 'u' ? 270 : this.dir === 'l' ? 180 : 0
-      this.context.rotate(deg * Math.PI / 180);
-      this.context.strokeStyle = 'white';
-      this.context.strokeText('>',0, 0);
-      this.context.restore();
+      // this.context.save();
+      // this.context.translate(this.x, this.y);
+      // var deg = this.dir === 'd' ? 90 : this.dir === 'u' ? 270 : this.dir === 'l' ? 180 : 0
+      // this.context.rotate(deg * Math.PI / 180);
+      // this.context.strokeStyle = 'white';
+      // this.context.strokeText('>', 0, 0);
+      // this.context.restore();
       this.context.closePath();
     }
 
     drive(): void {
       this.setDirection();
 
-      if(this.dir === 'u'){
-        this.y--;
-      }else if(this.dir === 'd'){
-        this.y++;
-      }else if(this.dir === 'r'){
-        this.x++;
-      }else{
-        this.x--;
-      }   
+      //console.log('destination', this.dir)
+
+      switch (this.dir) {
+        case '1':
+          this.x--;
+          this.y--;
+          break;
+        case '2':
+          this.y--;
+          break;
+        case '3':
+          this.x++;
+          this.y--;
+          break;
+        case '4':
+          this.x++;
+          break;
+        case '5':
+          this.x++;
+          this.y++;
+          break;
+        case '6':
+          this.y++;
+          break;
+        case '7':
+          this.x--;
+          this.y++;
+        case '8':
+          this.x--
+        default:
+          this.x;
+          this.y;
+          break;
+      }
     }
 
     setDirection(): void {
       function _getOppositeDir(dir: Direction): Direction {
-        return dir === 'u' ? 'd' : dir === 'd' ? 'u' : dir === 'l' ? 'r' : 'l';
+        switch (dir) {
+          case '1':
+            return '5';
+            break;
+          case '2':
+            return '6';
+            break;
+          case '3':
+            return '7';
+            break;
+          case '4':
+            return '8';
+            break;
+          case '5':
+            return '1';
+            break;
+          case '6':
+            return '2';
+            break;
+          case '7':
+            return '3';
+          case '8':
+            return '4';
+          default:
+            return '0';
+            break;
+        }
       }
       var availableDirections = this.getAvailableDirections();
       var indexOfOpositeDir = availableDirections.indexOf(_getOppositeDir(this.dir));
@@ -74,53 +125,62 @@ module Car {
         availableDirections.splice(indexOfOpositeDir, 1);
       }
 
-      if(availableDirections.length > 0){
+      if (availableDirections.length > 0) {
         this.dir = availableDirections[Math.floor(Math.random() * availableDirections.length)];
+      }else{
+        this.dir = '0';
       }
-    }
-
-    invert(): void {
-      var x = this.getXtoCheck(this.dir);
-      var y = this.getYtoCheck(this.dir);
-      var data = this.context.getImageData(x, y, this.r * 2, this.r * 2);
-
-      for (var i = 0; i < data.data.length; i += 4) {
-        data.data[i] = 255 - data.data[i];
-        data.data[i + 1] = 255 - data.data[i + 1];
-        data.data[i + 2] = 255 - data.data[i + 2];
-      }
-      this.context.putImageData(data, x, y);
-    }
-
-    getXtoCheck(dir: Direction): number {
-      return dir === 'u' ? this.x : dir === 'd' ? this.x : dir === 'r' ? this.x + this.r : this.x - this.r - 1;
-    }
-
-    getYtoCheck(dir: Direction): number {
-      return dir === 'u' ? this.y - this.r - 1 : dir === 'd' ? this.y + this.r : dir === 'r' ? this.y : this.y;
     }
 
     getAvailableDirections(): Array<Direction> {
-      //TODO: get square size of moving speed
-      var _this = this;
       var availableDirections: Array<Direction> = [];
+      var _this = this;
 
       function _isAvailableRoad(dir: Direction): boolean {
-        var x = _this.getXtoCheck(dir);
-        var y = _this.getYtoCheck(dir);
-        var w = 1;
-        var h = 1;
-        var nth = 4;
-        var data = _this.context.getImageData(x, y, w, h);
+
+        //var nth = 4;
+        var x: number = _this.x;
+        var y: number = _this.y;
+        switch (dir) {
+          case '1':
+            x = _this.x - 1;
+            y = _this.y - 1;
+            break;
+          case '2':
+            y = _this.y - 1;
+            break;
+          case '3':
+            x = _this.x + 1;
+            y = _this.y-1;
+            break;
+          case '4':
+            x = _this.x+1;
+            break;
+          case '5':
+            x = _this.x+1;
+            y = _this.y+1;
+            break;
+          case '6':
+            y = _this.y+1;
+            break;
+          case '7':
+            x = _this.x-1;
+            y = _this.y+1;
+          case '8':
+            x = _this.x-1;
+        }
+
+        var data = _this.context.getImageData(x, y, 1, 1);
         var flag = false;
 
         // data.data.forEach(function (value, index) {
         //   if (index % nth === nth - 1) {
-        //     if (!_isPixelRoadColor(data.data, index)) {
+        //     if (_isPixelRoadColor(data.data, index)) {
         //       flag = true;
         //     }
         //   }
         // })
+
         if (_isPixelRoadColor(data.data, 0)) {
           flag = true;
         }
@@ -132,28 +192,25 @@ module Car {
         return flag;
       }
 
-      function _hasPixelColor(colors: Uint8ClampedArray, index: number): boolean {
-        var r = colors[index + 0];
-        var g = colors[index + 1];
-        var b = colors[index + 2];
-        var a = colors[index + 3];
-
-        return r > 0 || g > 0 || b > 0;
-      }
-
       function _isPixelRoadColor(colors: Uint8ClampedArray, index: number): boolean {
         var r = colors[index + 0];
         var g = colors[index + 1];
         var b = colors[index + 2];
         var a = colors[index + 3];
 
-        return r > 250 && g == 0 && b == 0;
+        return r > 250 && g == 0 && b == 0 && a >= 150;
       }
 
-      _isAvailableRoad('u') ? availableDirections.push('u') : '';
-      _isAvailableRoad('d') ? availableDirections.push('d') : '';
-      _isAvailableRoad('r') ? availableDirections.push('r') : '';
-      _isAvailableRoad('l') ? availableDirections.push('l') : '';
+      _isAvailableRoad('1') ? availableDirections.push('1') : '';
+      _isAvailableRoad('2') ? availableDirections.push('2') : '';
+      _isAvailableRoad('3') ? availableDirections.push('3') : '';
+      _isAvailableRoad('4') ? availableDirections.push('4') : '';
+      _isAvailableRoad('5') ? availableDirections.push('5') : '';
+      _isAvailableRoad('6') ? availableDirections.push('6') : '';
+      _isAvailableRoad('7') ? availableDirections.push('7') : '';
+      _isAvailableRoad('8') ? availableDirections.push('8') : '';
+
+      //console.log('availableDirections', availableDirections);
 
       return availableDirections;
     }
