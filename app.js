@@ -10,6 +10,11 @@ var Car;
             this.y = p.y;
             this.r = 10;
             this.dir = '2';
+            Array.prototype.diff = function (a) {
+                return this.filter(function (i) {
+                    return a.indexOf(i) === -1;
+                });
+            };
         }
         init.prototype.draw = function () {
             this.context.beginPath();
@@ -19,10 +24,42 @@ var Car;
             this.context.font = "10px Arial";
             this.context.textBaseline = 'middle';
             this.context.textAlign = 'center';
+            this.context.save();
+            this.context.translate(this.x, this.y);
+            var deg = this.getDegreeToRotate();
+            this.context.rotate(deg * Math.PI / 180);
+            this.context.strokeStyle = 'white';
+            this.context.strokeText('>', 0, 0);
+            this.context.restore();
             this.context.closePath();
         };
         init.prototype.drive = function () {
             this.setDirection();
+            this.handleCoordinates();
+        };
+        init.prototype.getDegreeToRotate = function () {
+            switch (this.dir) {
+                case '1':
+                    return 225;
+                case '2':
+                    return 270;
+                case '3':
+                    return 315;
+                case '4':
+                    return 0;
+                case '5':
+                    return 45;
+                case '6':
+                    return 90;
+                case '7':
+                    return 135;
+                case '8':
+                    return 180;
+                default:
+                    return 0;
+            }
+        };
+        init.prototype.handleCoordinates = function () {
             switch (this.dir) {
                 case '1':
                     this.x--;
@@ -60,37 +97,27 @@ var Car;
             function _getOppositeDir(dir) {
                 switch (dir) {
                     case '1':
-                        return '5';
-                        break;
+                        return ['3', '4', '5', '6', '7'];
                     case '2':
-                        return '6';
-                        break;
+                        return ['1', '3', '5', '6', '7'];
                     case '3':
-                        return '7';
-                        break;
+                        return ['1', '8', '7', '6', '5'];
                     case '4':
-                        return '8';
-                        break;
+                        return ['1', '3', '8', '7', '5'];
                     case '5':
-                        return '1';
-                        break;
+                        return ['1', '2', '3', '8', '7'];
                     case '6':
-                        return '2';
-                        break;
+                        return ['1', '2', '3', '5', '7'];
                     case '7':
-                        return '3';
+                        return ['1', '2', '3', '4', '5'];
                     case '8':
-                        return '4';
+                        return ['1', '3', '4', '5', '7'];
                     default:
-                        return '0';
-                        break;
+                        return ['0'];
                 }
             }
             var availableDirections = this.getAvailableDirections();
-            var indexOfOpositeDir = availableDirections.indexOf(_getOppositeDir(this.dir));
-            if (indexOfOpositeDir >= 0) {
-                availableDirections.splice(indexOfOpositeDir, 1);
-            }
+            availableDirections = availableDirections.diff(_getOppositeDir(this.dir));
             if (availableDirections.length > 0) {
                 this.dir = availableDirections[Math.floor(Math.random() * availableDirections.length)];
             }
