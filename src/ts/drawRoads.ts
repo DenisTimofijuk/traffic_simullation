@@ -47,14 +47,6 @@ module Roads {
         this.context.lineWidth = 1;
         this.context.strokeStyle = 'rgba(255,0,0,255)';
         this.context.stroke(rectangle);
-
-        this.context.beginPath()
-        this.context.lineWidth = 1;
-        this.context.moveTo(15,15.5);
-        this.context.lineTo(this.context.canvas.width-15, this.context.canvas.height-15.5);
-        this.context.strokeStyle = 'rgba(255,0,0,255)';
-        this.context.stroke();
-        this.context.closePath();
       }
     }
   }

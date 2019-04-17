@@ -5,7 +5,7 @@ function initMain() {
     const canvas = <HTMLCanvasElement>document.getElementById('mainCanv');
     const driveBTN = <HTMLButtonElement>document.getElementById('drive');
     const fsBTN = <HTMLButtonElement>document.getElementById('fs');
-    const carsCount = 5;
+    const carsCount = 8;
     const carsArray: Array<Car.init> = [];
     const d = new d1.init();
 
@@ -31,8 +31,12 @@ function initMain() {
     function initSimulation(): void {
         canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
         roads.draw();
-        carsArray.forEach((element) => element.drive())
-        carsArray.forEach((element) => element.draw())
+        //carsArray.forEach((element) => element.drive())
+        //carsArray.forEach((element) => element.draw())
+        carsArray.forEach(function(car){
+            car.drive();
+            car.draw();
+        })
 
         window.requestAnimationFrame(initSimulation)
     }
