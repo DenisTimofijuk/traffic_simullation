@@ -47,6 +47,26 @@ module Roads {
         this.context.lineWidth = 1;
         this.context.strokeStyle = 'rgba(255,0,0,255)';
         this.context.stroke(rectangle);
+
+        this.context.beginPath()
+        this.context.lineWidth = 1;
+        this.context.moveTo(this.context.canvas.width-15 - 100.5, this.context.canvas.height/2-0.5);
+        this.context.lineTo(this.context.canvas.width-15, this.context.canvas.height/2-0.5);
+        this.context.moveTo(100.5, 15.5);
+        this.context.lineTo(100.5, 100.5);
+        this.context.strokeStyle = 'rgba(255,0,0,255)';
+        this.context.stroke();
+        this.context.closePath();
+
+        var rectangle = new Path2D();
+        rectangle.rect(this.context.canvas.width-15 - 100.5, this.context.canvas.height/2-0.5, 20, 20);
+        this.context.fillStyle = 'rgba(255,0,0,255)';
+        this.context.fill(rectangle);
+
+        var rectangle = new Path2D();
+        rectangle.rect(100, 100, 20, 20);
+        this.context.fillStyle = 'rgba(255,0,0,255)';
+        this.context.fill(rectangle);
       }
     }
   }
